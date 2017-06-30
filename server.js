@@ -15,8 +15,8 @@ app.get('/health-check', function (req, res) {
 });
 
 app.post('/user', (req, res, next) => {
-	if (req.body.userName) {
-		User.createUser({ userName: req.body.userName })
+	if (req.body) {
+		User.createUser(req.body)
 		.then(result => res.json(result))
 		.catch(err => next(err))
 	} else {
