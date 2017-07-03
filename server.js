@@ -24,6 +24,12 @@ app.post('/user', (req, res, next) => {
 	}
 });
 
+app.get('/user', (req, res, next) => {
+	User.findAllUser()
+	.then(result => res.json(result))
+	.catch(err => next(err))
+});
+
 app.listen(3000, () => {
 	console.log('Server listening on port 3000');
 });
