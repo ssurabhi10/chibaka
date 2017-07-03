@@ -15,6 +15,10 @@ class MemoryUserDB {
       return user;
     }
   }
+
+  getUsers () {
+    return this.users;
+  }
 }
 
 module.exports = MemoryUserDB;

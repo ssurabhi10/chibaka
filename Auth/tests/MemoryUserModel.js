@@ -23,8 +23,7 @@ class MemoryUserModel {
     if (key) {
       user = db.users.find(u => u[key] === query[key]);
     }
-    console.log(user.save);
-    return Promise.resolve(user);
+    return user;
   }
 
   /*
@@ -37,10 +36,34 @@ class MemoryUserModel {
     if (key) {
       user = db.users.filter(u => u[key] === query[key]);  
     }
-    return Promise.resolve(user);
+    return user;
   }
 
-  static create ({ userName, email, mobileNumber, password, role, isEmailVerified, isMobileVerified }) { // and other fields as arguments
+  static findAllUser () {
+    return db.getUsers();
+  }
+
+  static findUserById (_id) {
+    return this.findOne({ _id });
+  }
+
+  static findUserByName (userName) {
+    return this.findOne({ userName });
+  }
+
+  static findUserByEmail (email) {
+    return this.findOne({ email });
+  }
+
+  static findUserByMobileNumber (mobileNumber) {
+    return this.findOne({ mobileNumber });
+  }
+
+  static findUsersByRole (role) {
+    return this.find({ role });
+  }
+
+  static createUser ({ userName, email, mobileNumber, password, role, isEmailVerified, isMobileVerified }) { // and other fields as arguments
     const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashPassword = bcrypt.hashSync(password, salt);
