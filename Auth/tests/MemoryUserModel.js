@@ -71,10 +71,50 @@ class MemoryUserModel {
     db.save(user);
   }
 
-  save () {
-    const user = this;
+  static changeUserName (_id, userName) {
+    const user = this.findOne({ _id });
+    user.userName = userName;
     return db.save(user);
   }
+
+  static changeMobileNumber (_id, mobileNumber) {
+    const user = this.findOne({ _id });
+    user.mobileNumber = mobileNumber;
+    user.isMobileVerified = false;
+    return db.save(user);
+  }
+
+  static changeEmail (_id, email) {
+    const user = this.findOne({ _id });
+    user.email = email;
+    user.isEmailVerified = false;
+    return db.save(user);
+  }
+
+  static changeRole (_id, role) {
+    const user = this.findOne({ _id });
+    user.role = role;
+    return db.save(user);
+  }
+
+  static changePassword (_id, password) {
+    const user = this.findOne({ _id });
+    user.password = bcrypt.hashSync(password, bcrypt.genSaltSync());
+    return db.save(user);
+  }
+
+  static verifyEmail (_id, isEmailVerified) {
+    const user = this.findOne({ _id });
+    user.isEmailVerified = true;
+    return db.save(user);
+  }
+
+  static verifyMobile (_id, isMobileVerified) {
+    const user = this.findOne({ _id });
+    user.isMobileVerified = true;
+    return db.save(user);
+  }
+
 }
 
 module.exports = MemoryUserModel;
