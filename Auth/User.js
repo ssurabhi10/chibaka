@@ -73,6 +73,106 @@ class User {
     		reject(null);
     	});
     }
+     changeUserName (_id, userName){
+        return new Promise((resolve, reject) => {
+        	const user = this.model.findOne({ _id })
+        	if (user) {
+	        	user.userName = userName
+	        	resolve (user.save());
+            } else {
+            	reject(null);
+            }
+        });        
+    }
+
+    changeMobileNumber (_id, mobileNumber){
+    	return new Promise((resolve, reject) => {
+    		const user = this.model.findOne({ _id })
+    		if (user) {
+    			user.mobileNumber = mobileNumber;
+    			user.isMobileVerified = false;
+    			resolve (user.save());
+    	    } else {
+    	    	reject(null);
+    	    }
+
+    	});  	
+    }
+
+    changeEmail (_id, email) {
+    	return new Promise((resolve, reject) => {
+    		const user = this.model.findOne({ _id })
+	    	if (user) {
+	    			user.email = email;
+	    			user.isEmailVerified = false;
+	    			resolve (user.save());
+	    	    } else {
+		    	reject(null);
+		    }
+		});   
+
+    }
+
+    changeRole (_id, role) {
+    	return new Promise((resolve, reject) => {
+    		const user = this.model.findOne({ _id })
+	    	if (user) {
+	    			user.role = role
+	    			resolve (user.save());
+	    	    } else {
+		    	reject(null);
+		    }
+	    });
+
+    }
+
+    changePassword (_id, password) {
+    	return new Promise((resolve, reject) => {
+    		const user = this.model.findOne({ _id })
+    		const saltRounds = 10;
+			bcrypt.hash(password, saltRounds)
+			.then(hash => {
+			 	return Promise.resolve(hash); 
+			})	      
+	        .then(hashedPassword => {
+	    		user.password = hashedPassword;
+	    		resolve (user.save());
+	        });
+    	});
+    }
+
+    verifyEmail (_id, email) {
+    	return new Promise((resolve, reject) => {
+    		const user = this.model.findOne({ _id })
+    		if(user){
+    			if(user.email === email){
+                    user.isEmailVerified = true;
+                    resolve(user.save());
+                } else {
+                	reject(null);
+                }
+    		} else {
+    			reject(null);
+    		}
+    	});
+    }
+
+    verifyMobile(_id, mobileNumber){
+    	return new Promise((resolve, reject) => {
+    		const user = this.model.findOne({ _id })
+    		if  ( user) {
+    			if(user.mobileNumber === mobileNumber){
+                    user.isMobileVerified = true;
+                    resolve(user.save());
+                } else {
+                	reject(null);
+                }
+    		} else {
+    			reject(null);
+    		}
+    	});
+
+    }
 }
 
 module.exports = User;
