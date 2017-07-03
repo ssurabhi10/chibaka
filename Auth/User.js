@@ -41,6 +41,38 @@ class User {
 			reject(null);
 		});
 	}
+
+	findUserByName (userName) {
+        return new Promise((resolve, reject) => {
+        	const user = this.model.findOne({ userName });
+        	if (user) resolve(user);
+        	reject(null);
+        });
+    }
+
+    findUserByEmail (email) {
+        return new Promise((resolve, reject) => {
+            const user = this.model.findone({ email });
+            if (user) resolve(user);
+            reject(null);
+        });
+    }
+
+    findUserByMobileNumber (mobileNumber){
+    	return new Promise((resolve, reject) => {
+    		const user = this.model.findOne({ mobileNumber });
+    		if (user) resolve(user);
+    		reject(null);
+    	});
+    }
+
+    findUsersByRole (role){
+    	return new Promise((resolve, reject) => {
+    		const user = this.model.find({ role });
+    		if (user) resolve(user);
+    		reject(null);
+    	});
+    }
 }
 
 module.exports = User;
