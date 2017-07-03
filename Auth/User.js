@@ -73,6 +73,7 @@ class User {
     		reject(null);
     	});
     }
+  
      changeUserName (_id, userName){
         return new Promise((resolve, reject) => {
         	const user = this.model.findOne({ _id })
@@ -95,7 +96,6 @@ class User {
     	    } else {
     	    	reject(null);
     	    }
-
     	});  	
     }
 
@@ -123,7 +123,6 @@ class User {
 		    	reject(null);
 		    }
 	    });
-
     }
 
     changePassword (_id, password) {
@@ -145,13 +144,13 @@ class User {
     	return new Promise((resolve, reject) => {
     		const user = this.model.findOne({ _id })
     		if(user){
-    			if(user.email === email){
-                    user.isEmailVerified = true;
-                    resolve(user.save());
-                } else {
-                	reject(null);
-                }
-    		} else {
+    			if (user.email === email) {
+             user.isEmailVerified = true;
+             resolve(user.save());
+          } else {
+             reject(null);
+          }
+    	  } else {
     			reject(null);
     		}
     	});
@@ -161,17 +160,16 @@ class User {
     	return new Promise((resolve, reject) => {
     		const user = this.model.findOne({ _id })
     		if  ( user) {
-    			if(user.mobileNumber === mobileNumber){
-                    user.isMobileVerified = true;
-                    resolve(user.save());
-                } else {
-                	reject(null);
-                }
+    			if (user.mobileNumber === mobileNumber) {
+             user.isMobileVerified = true;
+             resolve(user.save());
+           } else {
+               reject(null);
+           }
     		} else {
     			reject(null);
     		}
     	});
-
     }
 }
 
