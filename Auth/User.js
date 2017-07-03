@@ -17,11 +17,28 @@ class User {
    			 	return Promise.resolve(hash); 
 			})
 			.then(hashedPassword => {
-				this.model.create({ userName, mobileNumber, email, password: hashedPassword, role, isEmailVerified: false, isMobileVerified: false }, (err, result) => {
-					if (err) reject(err);
-					resolve(result);
-				});
-			});
+				const newUser = new this.model({ userName, mobileNumber, email, password: hashedPassword, role, isEmailVerified: false, isMobileVerified: false });
+				return Promise.resolve(newUser);
+			})
+			.then(newUser => {
+				if (newUser) resolve (newUser.save());
+				reject(null);	
+			})
+		});
+	}
+
+	findAllUser () {
+		return new Promise((resolve, reject) => {
+			const users = this.model.find({});
+			resolve (users);
+		});
+	}
+
+	findUserById (_id) {
+		return new Promise((resolve, reject) => {
+			const user = this.model.findOne({ _id });
+			if (user) resolve (user);
+			reject(null);
 		});
 	}
 }
