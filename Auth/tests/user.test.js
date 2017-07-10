@@ -1,11 +1,20 @@
 const assert = require('assert');
-const User = require('./MemoryUserModel');
 const bcrypt = require('bcrypt');
+const UserClass = require('./../User');
+
+// to connect MemoryUserModel class
+const User = require('./MemoryUserModel')
+
+// to connect User class
+//const MemoryUserModel = require('./MemoryUserModel')
+//const User = new UserClass(MemoryUserModel);
 
 describe('User', function () {
 	let user;
 
 	beforeEach(function () {
+		// for MemoryUserModel class, use User here...
+		// for User class, use MemoryUserModel here...
 		user = new User({
 			userName: 'chi',
 			email: 'bozo@baka.com',
@@ -18,33 +27,41 @@ describe('User', function () {
 	});
 
 	describe('createUser', function () {
-		it ('Should create new user', function () {
-			User.createUser(user);
-			const users = User.findAllUser({});
+		it ('Should create new user', async function () {
+			User.createUser({
+				userName: 'chi',
+				email: 'bozo@baka.com',
+				mobileNumber: '9999988888',
+				password: 'password',
+				role: 'manager',
+				isEmailVerified: true,
+				isMobileVerified: true
+			});
+			const users = await User.findAllUser({});
 			assert.equal(users.length, 1);
 			assert.equal(users[0].userName, 'chi');
 		});
 	});
 
 	describe('findUserById', function () {
-		it ('Should return user by id', function () {
-			const user = User.findUserById(_id = 0);
+		it ('Should return user by id', async function () {
+			const user = await User.findUserById(_id = 0);
 			assert.equal(user._id, 0);
 			assert.equal(user.userName, 'chi');
 		});
 	});
 
 	describe('findUserByName', function () {
-		it ('Should return user by name', function () {
-			const user = User.findUserByName(userName = 'chi');
+		it ('Should return user by name', async function () {
+			const user = await User.findUserByName(userName = 'chi');
 			assert.equal(user._id, 0);
 			assert.equal(user.userName, 'chi');
 		});
 	});
 
 	describe('findUserByEmail', function () {
-		it ('Should return user by email', function () {
-			const user = User.findUserByEmail(email = 'bozo@baka.com');
+		it ('Should return user by email', async function () {
+			const user = await User.findUserByEmail(email = 'bozo@baka.com');
 			assert.equal(user._id, 0);
 			assert.equal(user.userName, 'chi');
 			assert.equal(user.email, 'bozo@baka.com');
@@ -52,8 +69,8 @@ describe('User', function () {
 	});
 
 	describe('findUserByMobileNumber', function () {
-		it ('Should return user by mobileNumber', function () {
-			const user = User.findUserByMobileNumber(mobileNumber = '9999988888');
+		it ('Should return user by mobileNumber', async function () {
+			const user = await User.findUserByMobileNumber(mobileNumber = '9999988888');
 			assert.equal(user._id, 0);
 			assert.equal(user.userName, 'chi');
 			assert.equal(user.mobileNumber, '9999988888');
@@ -61,31 +78,31 @@ describe('User', function () {
 	});
 
 	describe('findUsersByRole', function () {
-		it ('Should return users by role', function () {
-			const users = User.findUsersByRole(role = 'manager');
+		it ('Should return users by role', async function () {
+			const users = await User.findUsersByRole(role = 'manager');
 			assert.equal(users.length, 1);
 			assert.equal(users[0].role, 'manager');
 		});
 	});
 
 	describe('changeUserName', function () {
-		it ('Should change userName', function () {
-			const user = User.changeUserName(_id = 0, userName = 'bozo');
+		it ('Should change userName', async function () {
+			const user = await User.changeUserName(_id = 0, userName = 'bozo');
 			assert.equal(user._id, 0);
 			assert.equal(user.userName, 'bozo');
-			const usersWithNameBozo = User.findAllUser({});
+			const usersWithNameBozo = await User.findAllUser({});
 			assert.equal(usersWithNameBozo.length, 1);
 			assert.equal(usersWithNameBozo[0].userName, 'bozo');
 		});
 	});
 
 	describe('changeMobileNumber', function () {
-		it ('Should change mobileNumber', function () {
-			const user = User.changeMobileNumber(_id = 0, mobileNumber = '9898989898');
+		it ('Should change mobileNumber', async function () {
+			const user = await User.changeMobileNumber(_id = 0, mobileNumber = '9898989898');
 			assert.equal(user._id, 0);
 			assert.equal(user.mobileNumber, '9898989898');
 			assert.equal(user.isMobileVerified, false);
-			const usersWithNewMobileNumber = User.findAllUser({});
+			const usersWithNewMobileNumber = await User.findAllUser({});
 			assert.equal(usersWithNewMobileNumber.length, 1);
 			assert.equal(usersWithNewMobileNumber[0].mobileNumber, '9898989898');
 			assert.equal(usersWithNewMobileNumber[0].isMobileVerified, false);
@@ -93,12 +110,12 @@ describe('User', function () {
 	});
 
 	describe('changeEmail', function () {
-		it ('Should change email', function () {
-			const user = User.changeEmail(_id = 0, email = 'chi@baka.com');
+		it ('Should change email', async function () {
+			const user = await User.changeEmail(_id = 0, email = 'chi@baka.com');
 			assert.equal(user._id, 0);
 			assert.equal(user.email, 'chi@baka.com');
 			assert.equal(user.isEmailVerified, false);
-			const usersWithNewEmail = User.findAllUser({});
+			const usersWithNewEmail = await User.findAllUser({});
 			assert.equal(usersWithNewEmail.length, 1);
 			assert.equal(usersWithNewEmail[0].email, 'chi@baka.com');
 			assert.equal(usersWithNewEmail[0].isEmailVerified, false);
@@ -106,35 +123,35 @@ describe('User', function () {
 	});
 
 	describe('changeRole', function () {
-		it ('Should change role', function () {
-			const user = User.changeRole(_id = 0, role = 'admin');
+		it ('Should change role', async function () {
+			const user = await User.changeRole(_id = 0, role = 'admin');
 			assert.equal(user._id, 0);
 			assert.equal(user.role, 'admin');
-			const usersWithNewRole = User.findAllUser({});
+			const usersWithNewRole = await User.findAllUser({});
 			assert.equal(usersWithNewRole.length, 1);
 			assert.equal(usersWithNewRole[0].role, 'admin');
 		});
 	});
 
 	describe('changePassword', function () {
-		it ('Should change password', function () {
-			const user = User.changePassword(_id = 0, password = 'password123');
+		it ('Should change password', async function () {
+			const user = await User.changePassword(_id = 0, password = 'password123');
 			assert.equal(user._id, 0);
 			assert.equal(bcrypt.compareSync(password, user.password), true);
 		});
 	});
 
 	describe('verifyEmail', function () {
-		it ('Should verify email', function () {
-			const user = User.verifyEmail(_id = 0, isEmailVerified = true);
+		it ('Should verify email', async function () {
+			const user = await User.verifyEmail(_id = 0, email = 'chi@baka.com');
 			assert.equal(user._id, 0);
 			assert.equal(user.isEmailVerified, true);
 		});
 	});
 
 	describe('verifyMobile', function () {
-		it ('Should verify mobile number', function () {
-			const user = User.verifyMobile(_id = 0, isMobileVerified = true);
+		it ('Should verify mobile number', async function () {
+			const user = await User.verifyMobile(_id = 0, mobileNumber = '9898989898');
 			assert.equal(user._id, 0);
 			assert.equal(user.isMobileVerified, true);
 		});

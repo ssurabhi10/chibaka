@@ -9,168 +9,107 @@ class User {
 		return this._userModel;
 	}
 
-	createUser ({ userName, mobileNumber, email, password, role, isEmailVerified, isMobileVerified }) {
-		return new Promise((resolve, reject) => {
-			const saltRounds = 10;
-			bcrypt.hash(password, saltRounds)
-			.then(hash => {
-   			 	return Promise.resolve(hash); 
-			})
-			.then(hashedPassword => {
-				const newUser = new this.model({ userName, mobileNumber, email, password: hashedPassword, role, isEmailVerified: false, isMobileVerified: false });
-				return Promise.resolve(newUser);
-			})
-			.then(newUser => {
-				if (newUser) resolve (newUser.save());
-				reject(null);	
-			})
-		});
+	async createUser ({ userName, mobileNumber, email, password, role, isEmailVerified, isMobileVerified }) {
+        const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync());
+        const newUser = await new this.model({ userName, mobileNumber, email, password: hashedPassword, 
+            role, isEmailVerified: false, isMobileVerified: false });
+        return await newUser.save();
 	}
 
-	findAllUser () {
-		return new Promise((resolve, reject) => {
-			const users = this.model.find({});
-			resolve (users);
-		});
+	async findAllUser () {
+        return await this.model.find();
 	}
 
-	findUserById (_id) {
-		return new Promise((resolve, reject) => {
-			const user = this.model.findOne({ _id });
-			if (user) resolve (user);
-			reject(null);
-		});
+	async findUserById (_id) {
+		const user = await this.model.findOne({ _id });
+		if (user) return user;
+        return new Error('Invalid id');
 	}
 
-	findUserByName (userName) {
-        return new Promise((resolve, reject) => {
-        	const user = this.model.findOne({ userName });
-        	if (user) resolve(user);
-        	reject(null);
-        });
+	async findUserByName (userName) {
+    	const user = await this.model.findOne({ userName });
+    	if (user) return user;
+        return new Error('Invalid name');
     }
 
-    findUserByEmail (email) {
-        return new Promise((resolve, reject) => {
-            const user = this.model.findone({ email });
-            if (user) resolve(user);
-            reject(null);
-        });
+    async findUserByEmail (email) {
+        const user = await this.model.findOne({ email });
+        if (user) return user;
+        return new Error('Invalid email');
     }
 
-    findUserByMobileNumber (mobileNumber){
-    	return new Promise((resolve, reject) => {
-    		const user = this.model.findOne({ mobileNumber });
-    		if (user) resolve(user);
-    		reject(null);
-    	});
+    async findUserByMobileNumber (mobileNumber){
+		const user = await this.model.findOne({ mobileNumber });
+		if (user) return user;
+        return new Error('Invalid mobile number');
     }
 
-    findUsersByRole (role){
-    	return new Promise((resolve, reject) => {
-    		const user = this.model.find({ role });
-    		if (user) resolve(user);
-    		reject(null);
-    	});
+    async findUsersByRole (role){
+    	return await this.model.find({ role });
     }
   
-     changeUserName (_id, userName){
-        return new Promise((resolve, reject) => {
-        	const user = this.model.findOne({ _id })
-        	if (user) {
-	        	user.userName = userName
-	        	resolve (user.save());
-            } else {
-            	reject(null);
+    async changeUserName (_id, userName){
+    	const user = await this.model.findOne({ _id })
+    	if (user) {
+        	user.userName = userName
+        	return await user.save();
+        } else return new Error('Invalid user');
+    }
+
+    async changeMobileNumber (_id, mobileNumber){
+		const user = await this.model.findOne({ _id })
+		if (user) {
+			user.mobileNumber = mobileNumber;
+			user.isMobileVerified = false;
+			return await user.save();
+	    } else return new Error('Invalid user');
+    }
+
+    async changeEmail (_id, email) {
+		const user = await this.model.findOne({ _id })
+    	if (user) {
+			user.email = email;
+			user.isEmailVerified = false;
+			return await user.save();
+    	} else return new Error('Invalid user');
+    }
+
+    async changeRole (_id, role) {
+		const user = await this.model.findOne({ _id })
+    	if (user) {
+    		user.role = role
+    		return await user.save();
+    	} else return new Error('Invalid user');
+    }
+
+    async changePassword (_id, password) {
+		const user = await this.model.findOne({ _id })
+		if (user) {
+            user.password = bcrypt.hashSync(password, bcrypt.genSaltSync());
+            return await user.save();
+        } else return new Error('Invalid user');
+    }
+
+    async verifyEmail (_id, email) {
+		const user = await this.model.findOne({ _id })
+		if (user) {
+			if (user.email === email) {
+                user.isEmailVerified = true;
+                return await user.save();
             }
-        });        
+        } else return new Error('Invalid user');
     }
 
-    changeMobileNumber (_id, mobileNumber){
-    	return new Promise((resolve, reject) => {
-    		const user = this.model.findOne({ _id })
-    		if (user) {
-    			user.mobileNumber = mobileNumber;
-    			user.isMobileVerified = false;
-    			resolve (user.save());
-    	    } else {
-    	    	reject(null);
-    	    }
-    	});  	
+    async verifyMobile(_id, mobileNumber){
+		const user = await this.model.findOne({ _id })
+		if (user) {
+	        if (user.mobileNumber === mobileNumber) {
+                user.isMobileVerified = true;
+                return await user.save();
+            }
+        } else return new Error('Invalid user');
     }
 
-    changeEmail (_id, email) {
-    	return new Promise((resolve, reject) => {
-    		const user = this.model.findOne({ _id })
-	    	if (user) {
-	    			user.email = email;
-	    			user.isEmailVerified = false;
-	    			resolve (user.save());
-	    	    } else {
-		    	reject(null);
-		    }
-		});   
-
-    }
-
-    changeRole (_id, role) {
-    	return new Promise((resolve, reject) => {
-    		const user = this.model.findOne({ _id })
-	    	if (user) {
-	    			user.role = role
-	    			resolve (user.save());
-	    	    } else {
-		    	reject(null);
-		    }
-	    });
-    }
-
-    changePassword (_id, password) {
-    	return new Promise((resolve, reject) => {
-    		const user = this.model.findOne({ _id })
-    		const saltRounds = 10;
-			bcrypt.hash(password, saltRounds)
-			.then(hash => {
-			 	return Promise.resolve(hash); 
-			})	      
-	        .then(hashedPassword => {
-	    		user.password = hashedPassword;
-	    		resolve (user.save());
-	        });
-    	});
-    }
-
-    verifyEmail (_id, email) {
-    	return new Promise((resolve, reject) => {
-    		const user = this.model.findOne({ _id })
-    		if(user){
-    			if (user.email === email) {
-             user.isEmailVerified = true;
-             resolve(user.save());
-          } else {
-             reject(null);
-          }
-    	  } else {
-    			reject(null);
-    		}
-    	});
-    }
-
-    verifyMobile(_id, mobileNumber){
-    	return new Promise((resolve, reject) => {
-    		const user = this.model.findOne({ _id })
-    		if  ( user) {
-    			if (user.mobileNumber === mobileNumber) {
-             user.isMobileVerified = true;
-             resolve(user.save());
-           } else {
-               reject(null);
-           }
-    		} else {
-    			reject(null);
-    		}
-    	});
-    }
 }
 
 module.exports = User;
