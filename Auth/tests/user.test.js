@@ -3,11 +3,11 @@ const bcrypt = require('bcrypt');
 const UserClass = require('./../User');
 
 // to connect MemoryUserModel class
-const User = require('./MemoryUserModel')
+//const User = require('./MemoryUserModel')
 
 // to connect User class
-//const MemoryUserModel = require('./MemoryUserModel')
-//const User = new UserClass(MemoryUserModel);
+const MemoryUserModel = require('./MemoryUserModel')
+const User = new UserClass(MemoryUserModel);
 
 describe('User', function () {
 	let user;
@@ -15,7 +15,7 @@ describe('User', function () {
 	beforeEach(function () {
 		// for MemoryUserModel class, use User here...
 		// for User class, use MemoryUserModel here...
-		user = new User({
+		user = new MemoryUserModel({
 			userName: 'chi',
 			email: 'bozo@baka.com',
 			mobileNumber: '9999988888',

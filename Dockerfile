@@ -6,11 +6,14 @@ WORKDIR /chibaka-app
 
 # Install app dependencies
 COPY package.json /chibaka-app/package.json
-RUN cd/chibaka-app; npm install
+RUN cd/chibaka-app; npm install --quiet
+
+# Set required environment variables
+ENV NODE_ENV production
 
 # Bundle app source
 COPY . /chibaka-app
 
-EXPOSE 3000
+EXPOSE 3006
 
-CMD [ "node", "/chibaka-app/server.js" ]
+CMD [ "node", "/chibaka-app/server.js", ";", "npm", "test" ]

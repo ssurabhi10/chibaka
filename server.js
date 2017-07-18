@@ -4,9 +4,11 @@ const User = require('./Auth/user.model.js');
 const bodyParser = require('body-parser')
 const mongoose = require('mongoose');
 const dbConnect = require('./index.js');
-//const morgan = require('morgan');
+const morgan = require('morgan');
 
 dbConnect();
+
+app.use(morgan('dev'));
 
 app.use(bodyParser.json());
 
@@ -30,6 +32,6 @@ app.get('/user', (req, res, next) => {
 	.catch(err => next(err))
 });
 
-app.listen(3000, () => {
-	console.log('Server listening on port 3000');
+app.listen(3006, () => {
+	console.log('Server listening on port 3006');
 });

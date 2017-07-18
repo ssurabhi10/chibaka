@@ -1,0 +1,88 @@
+version: "3"
+
+volumes:
+  redisstore:
+  mongostore:
+  pgstore:
+  esdata:
+    driver: local
+
+services:
+
+  web: 
+    image: surabhisharma/chibaka-app:latest
+    deploy:
+      replicas: 1
+      resources: 
+        limits: 
+          cpus: "0.1"
+          memory: 2GB
+      restart_policy: 
+        condition: on-failure
+    ports: 
+      - "3000:3000"
+    networks:
+      - webnet
+    environment:
+      DATABASE_URL: postgres://chibaka@postgres/chibaka
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - webnet
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisstore:/data
+    networks:
+      - webnet
+      
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongostore:/mongodb/data
+    networks:
+      - webnet
+
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=chibaka
+      - POSTGRES_USER=chibaka
+      - POSTGRES_DB=chibaka
+    volumes:
+      - pgstore:/var/lib/postgresql/data
+    networks:
+      - webnet
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.2.2
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    deploy:
+      resources:
+        ulimits:
+          memlock: -1
+        mem_limit: 1g
+        cap_add:
+          - IPC_LOCK
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - webnet
+
+networks:
+  webnet:
